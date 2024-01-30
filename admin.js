@@ -22,7 +22,11 @@
 				},
 			}
 
-			mormat_scheduler.bindEventsManager('.mormat_scheduler_eventsManager', config);
+			$('.mormat_scheduler_eventsManager').each(function() {
+				mormat_scheduler.bindEventsManager(this, config);
+			});
+
+			
 
 		});
 

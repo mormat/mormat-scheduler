@@ -2,7 +2,7 @@
 
 /*
  * Plugin Name: Mormat Scheduler
- * Plugin URI: http://github.com/mormat/wp-scheduler
+ * Plugin URI: https://github.com/mormat/wp-scheduler
  * Description: Provides a custom type for rendering a scheduler with events
  * Version: 0.0.1
  * Requires at least: 6.1
@@ -15,15 +15,27 @@ function mormat_scheduler_init() {
 
     register_post_type('mormat_scheduler', 
         array(
-            'labels' => array(
-                'name'          => __('Schedulers',    'textdomain'),
-                'singular_name' => __('Scheduler',     'textdomain'),
-                'add_new_item'  => __('Add scheduler', 'textdomain'),
-            ),
+			'label'        => __( 'Schedulers'),
+			'description'  => __( 'Display a scheduler'),
             'public'       => true,
             'has_archive'  => true,
             'show_in_menu' => true,
-            'rewrite'			  => array( 'slug' => 'mormat_scheduler'),
+            'rewrite'	   => array( 'slug' => 'mormat_scheduler'),
+            'labels' => array(
+                'name'               => __('Schedulers',    'textdomain'),
+                'singular_name'      => __('Scheduler',     'textdomain'),
+                'menu_name'          => __( 'Schedulers'),
+        		'all_items'          => __( 'All schedulers'),
+				'view_item'          => __( 'View scheduler'),
+				'add_new_item'       => __( 'Add a new scheduler'),
+				'add_new'            => __( 'Add a scheduler'),
+				'edit_item'          => __( 'Edit scheduler'),
+				'update_item'        => __( 'Update scheduler'),
+				'search_items'       => __( 'Search scheduler'),
+				'not_found'          => __( 'Scheduler not found'),
+				'not_found_in_trash' => __( 'Scheduler not found in trash'),
+
+            ),
         )
     );
     
@@ -55,9 +67,10 @@ function mormat_scheduler_add_meta_boxes_html() {
 
 	$jsonEvents = get_post_meta( get_the_ID(), 'mormat_scheduler_jsonEvents', true);
 
-	echo '<input name="mormat_scheduler[jsonEvents]" value="' . esc_attr($jsonEvents) . '" style="width: 100%" />';
+	echo '<input name="mormat_scheduler[jsonEvents]" value="' . esc_attr($jsonEvents) . '" type="hidden" />';
 
 	echo '<div class="mormat_scheduler_eventsManager"></div>';
+	
 }
 
 add_action('add_meta_boxes', 'mormat_scheduler_add_meta_boxes');
@@ -97,10 +110,9 @@ function mormat_scheduler_save_postdata( $post_id ) {
         $mormat_scheduler = $_POST['mormat_scheduler'] + array( 
         	'jsonEvents' => ''
         );
-        
+                
 		update_post_meta($post_id, 'mormat_scheduler_jsonEvents', $mormat_scheduler['jsonEvents']);
         
-//        error_log('saving scheduler infos ' . var_export($mormat_scheduler['events'], true));
     }
     
 }
@@ -109,10 +121,40 @@ add_action( 'save_post', 'mormat_scheduler_save_postdata');
 
 function mormat_scheduler_content_filter( $content ) {
 
+	$post = get_post();
+
 	if ( get_post()->post_type === 'mormat_scheduler' ) {
-		var_dump('MKMLQKMLKQSMLDQKSDML');	
+		
+		$jsonEventsUrl = admin_url('admin-ajax.php') . '?' . http_build_query(array(
+			'action' => 'mormat_scheduler_jsonEvents',
+			'p' => $post->ID
+		));
+		
+		$content .= '<p class="mormat-scheduler-Scheduler" data-url="';
+		$content .= esc_attr($jsonEventsUrl);
+		$content .= '">Scheduler shoud be displayed here</p>';
+		
 	}
 	
-	return '<p>ICI !!!</p>' . $content . '<p>LA !!!</p>';
+	return $content;
 
 }
+
+add_filter( 'the_content', 'mormat_scheduler_content_filter');
+
+function handle_ajax_mormat_scheduler_jsonEvents()
+{
+	$post_id = intval($_REQUEST['p']);
+
+	$jsonEvents = get_post_meta( $post_id, 'mormat_scheduler_jsonEvents', true);
+	
+	if ( ! headers_sent() ) {
+		header( 'Content-Type: application/json' );
+		echo $jsonEvents ? $jsonEvents : '[]';
+	}
+
+    exit;
+}
+
+add_action( 'wp_ajax_mormat_scheduler_jsonEvents', 'handle_ajax_mormat_scheduler_jsonEvents' );
+

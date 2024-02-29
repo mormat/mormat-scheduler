@@ -11,6 +11,8 @@
  * Author: URI: http://github.com/mormat
  */
 
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
 function mormat_scheduler_init() {
 
     register_post_type('mormat_scheduler', 

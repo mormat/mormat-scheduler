@@ -7,8 +7,10 @@
  * Version: 0.0.1
  * Requires at least: 6.1
  * Requires PHP: 7.2
+ * License: GPLv2
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Author: Mathieu MOREL
- * Author: URI: http://github.com/mormat
+ * Author URI: http://github.com/mormat
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly

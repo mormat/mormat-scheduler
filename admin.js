@@ -2,31 +2,15 @@
 
 	$(document).ready(function() {
 
-		$('[name="mormat_scheduler[jsonEvents]"]').each(function() {
+		$('[name="mormat_scheduler_events_csv"]').each(function() {
 
-			var manager = mormat_scheduler.buildEventsManager({
-				type: 'hidden_input',
-				element: this
-			});
+			$(this).hide();
+
+			var props = {
+				targetElement: this
+			};
 			
-			var config = {
-				events: manager.load(),
-				onEventCreate: function(v) {
-					manager.save(v);
-				},
-				onEventUpdate: function(v) {
-					manager.save(v);
-				},
-				onEventDelete: function(v) {
-					manager.delete(v);
-				},
-			}
-
-			$('.mormat_scheduler_eventsManager').each(function() {
-				mormat_scheduler.bindEventsManager(this, config);
-			});
-
-			
+			mormat_scheduler.renderEventsList('.mormat_scheduler_eventsList', props);
 
 		});
 

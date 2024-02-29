@@ -65,12 +65,14 @@ function mormat_scheduler_add_meta_boxes() {
 
 function mormat_scheduler_add_meta_boxes_html() {
 
-	$jsonEvents = get_post_meta( get_the_ID(), 'mormat_scheduler_jsonEvents', true);
+	$eventsList = get_post_meta( get_the_ID(), 'mormat_scheduler_events_csv', true);
 
-	echo '<input name="mormat_scheduler[jsonEvents]" value="' . esc_attr($jsonEvents) . '" type="hidden" />';
-
-	echo '<div class="mormat_scheduler_eventsManager"></div>';
+	echo '<textarea name="mormat_scheduler_events_csv">';
+	echo esc_textarea($eventsList);
+	echo '</textarea>';
 	
+	echo '<div class="mormat_scheduler_eventsList"></div>';
+		
 }
 
 add_action('add_meta_boxes', 'mormat_scheduler_add_meta_boxes');
@@ -81,7 +83,7 @@ function mormat_scheduler_wp_enqueue_scripts() {
 	
 	wp_enqueue_script(  'mormat_scheduler' );
 	
-	wp_register_script( 'mormat_scheduler_dist', plugin_dir_url( __FILE__ ) . 'dist/index.js', [ 'jquery' ]);
+	wp_register_script( 'mormat_scheduler_dist', plugin_dir_url( __FILE__ ) . 'dist/mormat_scheduler.js', [ 'jquery' ]);
 	
 	wp_enqueue_script(  'mormat_scheduler_dist' );
 
@@ -95,7 +97,7 @@ function mormat_scheduler_admin_enqueue_scripts() {
 	
 	wp_enqueue_script(  'mormat_scheduler_admin' );
 
-	wp_register_script( 'mormat_scheduler_dist', plugin_dir_url( __FILE__ ) . 'dist/index.js', [ 'jquery' ]);
+	wp_register_script( 'mormat_scheduler_dist', plugin_dir_url( __FILE__ ) . 'dist/mormat_scheduler.js', [ 'jquery' ]);
 	
 	wp_enqueue_script(  'mormat_scheduler_dist' );
 
@@ -105,13 +107,11 @@ add_action('admin_enqueue_scripts', 'mormat_scheduler_admin_enqueue_scripts');
 
 function mormat_scheduler_save_postdata( $post_id ) {
     
-    if ( array_key_exists ( 'mormat_scheduler', $_POST ) ) {
+    if ( array_key_exists ( 'mormat_scheduler_events_csv', $_POST ) ) {
         
-        $mormat_scheduler = $_POST['mormat_scheduler'] + array( 
-        	'jsonEvents' => ''
-        );
-                
-		update_post_meta($post_id, 'mormat_scheduler_jsonEvents', $mormat_scheduler['jsonEvents']);
+        $cleanedValue = sanitize_textarea_field($_POST['mormat_scheduler_events_csv']);
+        
+		update_post_meta($post_id, 'mormat_scheduler_events_csv', $cleanedValue);
         
     }
     
@@ -125,14 +125,9 @@ function mormat_scheduler_content_filter( $content ) {
 
 	if ( get_post()->post_type === 'mormat_scheduler' ) {
 		
-		$jsonEventsUrl = admin_url('admin-ajax.php') . '?' . http_build_query(array(
-			'action' => 'mormat_scheduler_jsonEvents',
-			'p' => $post->ID
-		));
+		$value = get_post_meta($post->ID, 'mormat_scheduler_events_csv', true);
 		
-		$content .= '<p class="mormat-scheduler-Scheduler" data-url="';
-		$content .= esc_attr($jsonEventsUrl);
-		$content .= '">Scheduler shoud be displayed here</p>';
+		$content .= '<p class="mormat-scheduler-Scheduler">' . esc_html($value) . '</p>';
 		
 	}
 	
@@ -142,19 +137,4 @@ function mormat_scheduler_content_filter( $content ) {
 
 add_filter( 'the_content', 'mormat_scheduler_content_filter');
 
-function handle_ajax_mormat_scheduler_jsonEvents()
-{
-	$post_id = intval($_REQUEST['p']);
-
-	$jsonEvents = get_post_meta( $post_id, 'mormat_scheduler_jsonEvents', true);
-	
-	if ( ! headers_sent() ) {
-		header( 'Content-Type: application/json' );
-		echo $jsonEvents ? $jsonEvents : '[]';
-	}
-
-    exit;
-}
-
-add_action( 'wp_ajax_mormat_scheduler_jsonEvents', 'handle_ajax_mormat_scheduler_jsonEvents' );
 

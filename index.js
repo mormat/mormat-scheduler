@@ -4,17 +4,15 @@
 
 		$('.mormat-scheduler-Scheduler').each(function() {
 		
+			console.log('mormat_scheduler', mormat_scheduler);
+		
 			var element = this;
 			
-			$.get( $(element).data('url'), function(events) {
-
-				mormat_scheduler.bindScheduler(element, {
-					events: events,
-					draggable: false,
-					enableOverlapping: true
-				});
-				
-			});
+			var props = {
+				events: mormat_scheduler.utils['csv'].parseString($(element).html())
+			}
+			
+			mormat_scheduler.renderScheduler(element, props);
 		
 		});
 

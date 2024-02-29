@@ -5,7 +5,7 @@
  * Plugin URI: https://github.com/mormat/wp-scheduler
  * Description: Provides a custom type for rendering a scheduler with events
  * Version: 0.0.1
- * Requires at least: 6.1
+ * Requires at least: 6.4
  * Requires PHP: 7.2
  * License: GPLv2
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html

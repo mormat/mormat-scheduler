@@ -17,25 +17,25 @@ function mormat_scheduler_init() {
 
     register_post_type('mormat_scheduler', 
         array(
-			'label'        => __( 'Schedulers'),
-			'description'  => __( 'Display a scheduler'),
+			'label'        => __( 'Schedulers',          'mormat-scheduler'),
+			'description'  => __( 'Display a scheduler', 'mormat-scheduler'),
             'public'       => true,
             'has_archive'  => true,
             'show_in_menu' => true,
             'rewrite'	   => array( 'slug' => 'mormat_scheduler'),
             'labels' => array(
-                'name'               => __('Schedulers',    'textdomain'),
-                'singular_name'      => __('Scheduler',     'textdomain'),
-                'menu_name'          => __( 'Schedulers'),
-        		'all_items'          => __( 'All schedulers'),
-				'view_item'          => __( 'View scheduler'),
-				'add_new_item'       => __( 'Add a new scheduler'),
-				'add_new'            => __( 'Add a scheduler'),
-				'edit_item'          => __( 'Edit scheduler'),
-				'update_item'        => __( 'Update scheduler'),
-				'search_items'       => __( 'Search scheduler'),
-				'not_found'          => __( 'Scheduler not found'),
-				'not_found_in_trash' => __( 'Scheduler not found in trash'),
+                'name'               => __('Schedulers',      'mormat-scheduler'),
+                'singular_name'      => __('Scheduler',       'mormat-scheduler'),
+                'menu_name'          => __( 'Schedulers',     'mormat-scheduler'),
+        		'all_items'          => __( 'All schedulers', 'mormat-scheduler'),
+				'view_item'          => __( 'View scheduler', 'mormat-scheduler'),
+				'add_new_item'       => __( 'Add a new scheduler', 'mormat-scheduler'),
+				'add_new'            => __( 'Add a scheduler',     'mormat-scheduler'),
+				'edit_item'          => __( 'Edit scheduler',      'mormat-scheduler'),
+				'update_item'        => __( 'Update scheduler',    'mormat-scheduler'),
+				'search_items'       => __( 'Search scheduler',    'mormat-scheduler'),
+				'not_found'          => __( 'Scheduler not found', 'mormat-scheduler'),
+				'not_found_in_trash' => __( 'Scheduler not found in trash', 'mormat-scheduler'),
 
             ),
         )
@@ -58,7 +58,7 @@ function mormat_scheduler_add_meta_boxes() {
 
     add_meta_box(
         'mormat_scheduler_box_id',
-        __('Events manager'),
+        __('Events list', 'mormat-scheduler'),
         'mormat_scheduler_add_meta_boxes_html',
 		'mormat_scheduler'
     );

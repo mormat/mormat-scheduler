@@ -76,6 +76,8 @@ function mormat_scheduler_add_meta_boxes_html() {
 	echo '</textarea>';
 	
 	echo '<div class="mormat_scheduler_eventsList"></div>';
+	
+	echo wp_nonce_field('mormat_scheduler', 'mormat_scheduler_nonce');
 		
 }
 
@@ -112,6 +114,8 @@ add_action('admin_enqueue_scripts', 'mormat_scheduler_admin_enqueue_scripts');
 function mormat_scheduler_save_postdata( $post_id ) {
     
     if ( array_key_exists ( 'mormat_scheduler_events_csv', $_POST ) ) {
+        
+        check_admin_referer('mormat_scheduler', 'mormat_scheduler_nonce');
         
         $cleanedValue = sanitize_textarea_field($_POST['mormat_scheduler_events_csv']);
         

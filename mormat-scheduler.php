@@ -89,7 +89,7 @@ function mormat_scheduler_wp_enqueue_scripts() {
 	
 	wp_enqueue_script(  'mormat_scheduler' );
 	
-	wp_register_script( 'mormat_scheduler_dist', plugin_dir_url( __FILE__ ) . 'dist/mormat_scheduler.js', [ 'jquery' ]);
+	wp_register_script( 'mormat_scheduler_dist', plugin_dir_url( __FILE__ ) . 'dist/mormat_standalone_scheduler.js', [ 'jquery' ]);
 	
 	wp_enqueue_script(  'mormat_scheduler_dist' );
 
@@ -103,7 +103,7 @@ function mormat_scheduler_admin_enqueue_scripts() {
 	
 	wp_enqueue_script(  'mormat_scheduler_admin' );
 
-	wp_register_script( 'mormat_scheduler_dist', plugin_dir_url( __FILE__ ) . 'dist/mormat_scheduler.js', [ 'jquery' ]);
+	wp_register_script( 'mormat_scheduler_dist', plugin_dir_url( __FILE__ ) . 'dist/mormat_standalone_scheduler.js', [ 'jquery' ]);
 	
 	wp_enqueue_script(  'mormat_scheduler_dist' );
 

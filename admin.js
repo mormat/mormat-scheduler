@@ -10,7 +10,7 @@
 				targetElement: this
 			};
 			
-			mormat_scheduler.renderEventsList('.mormat_scheduler_eventsList', props);
+			mormat_standalone_scheduler.renderEventsList('.mormat_scheduler_eventsList', props);
 
 		});
 

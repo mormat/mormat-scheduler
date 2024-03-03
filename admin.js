@@ -2,7 +2,7 @@
 
 	$(document).ready(function() {
 
-		$('[name="mormat_scheduler_events_csv"]').each(function() {
+		$('[name="mormat_scheduler_events_tsv"]').each(function() {
 
 			$(this).hide();
 

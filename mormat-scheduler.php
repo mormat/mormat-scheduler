@@ -69,9 +69,9 @@ function mormat_scheduler_add_meta_boxes() {
 
 function mormat_scheduler_add_meta_boxes_html() {
 
-	$eventsList = get_post_meta( get_the_ID(), 'mormat_scheduler_events_csv', true);
+	$eventsList = get_post_meta( get_the_ID(), 'mormat_scheduler_events_tsv', true);
 
-	echo '<textarea name="mormat_scheduler_events_csv">';
+	echo '<textarea name="mormat_scheduler_events_tsv">';
 	echo esc_textarea($eventsList);
 	echo '</textarea>';
 	
@@ -113,13 +113,13 @@ add_action('admin_enqueue_scripts', 'mormat_scheduler_admin_enqueue_scripts');
 
 function mormat_scheduler_save_postdata( $post_id ) {
     
-    if ( array_key_exists ( 'mormat_scheduler_events_csv', $_POST ) ) {
+    if ( array_key_exists ( 'mormat_scheduler_events_tsv', $_POST ) ) {
         
         check_admin_referer('mormat_scheduler', 'mormat_scheduler_nonce');
         
-        $cleanedValue = sanitize_textarea_field($_POST['mormat_scheduler_events_csv']);
+        $cleanedValue = sanitize_textarea_field($_POST['mormat_scheduler_events_tsv']);
         
-		update_post_meta($post_id, 'mormat_scheduler_events_csv', $cleanedValue);
+		update_post_meta($post_id, 'mormat_scheduler_events_tsv', $cleanedValue);
         
     }
     
@@ -133,7 +133,7 @@ function mormat_scheduler_content_filter( $content ) {
 
 	if ( get_post()->post_type === 'mormat_scheduler' ) {
 		
-		$value = get_post_meta($post->ID, 'mormat_scheduler_events_csv', true);
+		$value = get_post_meta($post->ID, 'mormat_scheduler_events_tsv', true);
 		
 		$content .= '<p class="mormat-scheduler-Scheduler">' . esc_html($value) . '</p>';
 		

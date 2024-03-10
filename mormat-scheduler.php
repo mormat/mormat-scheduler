@@ -71,13 +71,13 @@ function mormat_scheduler_add_meta_boxes_html() {
 
 	$eventsList = get_post_meta( get_the_ID(), 'mormat_scheduler_events_tsv', true);
 
+ 	wp_nonce_field('mormat_scheduler', 'mormat_scheduler_nonce');
+
 	echo '<textarea name="mormat_scheduler_events_tsv">';
 	echo esc_textarea($eventsList);
 	echo '</textarea>';
 	
 	echo '<div class="mormat_scheduler_eventsList"></div>';
-	
-	echo wp_nonce_field('mormat_scheduler', 'mormat_scheduler_nonce');
 		
 }
 

@@ -1,8 +1,8 @@
 === Mormat Scheduler ===
 Contributors: Mathieu Morel
 Tags: post type, content types, custom post types, scheduler, beta
-Requires at least: 6.1
-Tested up to:      6.1
+Requires at least: 6.4
+Tested up to:      6.4
 Requires PHP:      7.2
 License: GPLv2 or later
 Stable tag: 0.0.1

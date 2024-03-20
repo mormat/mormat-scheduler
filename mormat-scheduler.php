@@ -2,9 +2,9 @@
 
 /*
  * Plugin Name: Mormat Scheduler
- * Plugin URI: https://github.com/mormat/wp-scheduler
- * Description: Provides a custom type for rendering a scheduler with events
- * Version: 0.0.1
+ * Plugin URI: https://github.com/mormat/scheduler-widget
+ * Description: Add a Google-like scheduler to your WordPress site
+ * Version: 0.1.0
  * Requires at least: 6.4
  * Requires PHP: 7.2
  * License: GPLv2
@@ -15,134 +15,191 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
+define('MORMAT_SCHEDULER_VERSION', '0.1.0');
+
+define('MORMAT_SCHEDULER_EVENTS_TABLENAME', 'mormat_scheduler_events');
+
+define('MORMAT_SCHEDULER_NONCE_ACTION', 'mormat_scheduler_events');
+
 function mormat_scheduler_init() {
-
-    register_post_type('mormat_scheduler', 
-        array(
-			'label'        => __( 'Schedulers',          'mormat-scheduler'),
-			'description'  => __( 'Display a scheduler', 'mormat-scheduler'),
-            'public'       => true,
-            'has_archive'  => true,
-            'show_in_menu' => true,
-            'rewrite'	   => array( 'slug' => 'mormat_scheduler'),
-            'labels' => array(
-                'name'               => __('Schedulers',      'mormat-scheduler'),
-                'singular_name'      => __('Scheduler',       'mormat-scheduler'),
-                'menu_name'          => __( 'Schedulers',     'mormat-scheduler'),
-        		'all_items'          => __( 'All schedulers', 'mormat-scheduler'),
-				'view_item'          => __( 'View scheduler', 'mormat-scheduler'),
-				'add_new_item'       => __( 'Add a new scheduler', 'mormat-scheduler'),
-				'add_new'            => __( 'Add a scheduler',     'mormat-scheduler'),
-				'edit_item'          => __( 'Edit scheduler',      'mormat-scheduler'),
-				'update_item'        => __( 'Update scheduler',    'mormat-scheduler'),
-				'search_items'       => __( 'Search scheduler',    'mormat-scheduler'),
-				'not_found'          => __( 'Scheduler not found', 'mormat-scheduler'),
-				'not_found_in_trash' => __( 'Scheduler not found in trash', 'mormat-scheduler'),
-
-            ),
-        )
-    );
+    
+    add_shortcode('mormat_scheduler', 'mormat_scheduler_shortcode');
     
 }
 
-add_action('init', 'mormat_scheduler_init');
+add_action( 'init', 'mormat_scheduler_init' );
 
-function mormat_scheduler_activate() {
-
-	flush_rewrite_rules();
-	
-}
-
-register_activation_hook( __FILE__, 'mormat_scheduler_activate' );
-
-
-function mormat_scheduler_add_meta_boxes() {
-
-    add_meta_box(
-        'mormat_scheduler_box_id',
-        __('Events list', 'mormat-scheduler'),
-        'mormat_scheduler_add_meta_boxes_html',
-		'mormat_scheduler'
-    );
+function mormat_scheduler_shortcode($atts = [], $content = null) {
     
+    $defaults = [
+        'initial_date' => null,
+        'default_view' => 'week',
+        'height'       => '640px',
+        'events_namespace' => '',
+    ];
+    
+    $params  = (is_array($atts) ? $atts : []) + $defaults;
+    
+    $params['events'] = mormat_scheduler_get_events($params['events_namespace']);
+    $params['editable']  = is_user_logged_in();
+    $params['draggable'] = is_user_logged_in();
+    
+    $params['urls'] = [];
+    foreach (['save_event', 'delete_event'] as $ajaxAction) {
+        $rawUrl = admin_url('admin-ajax.php?' . http_build_query([
+            'action' => 'mormat_scheduler_' . $ajaxAction,
+        ]));
+        $securedUrl = wp_nonce_url($rawUrl, MORMAT_SCHEDULER_NONCE_ACTION);
+        $params['urls'][$ajaxAction] = $securedUrl;
+    }    
+    
+    $jsonParams = json_encode($params);
+    
+    if ($content !== null) {
+        $content .= '<div class="mormat_scheduler"'.
+                    '     data-params="'.esc_attr($jsonParams).'"'.
+                    '></div>';
+    }
+    
+    return $content;
 }
-
-function mormat_scheduler_add_meta_boxes_html() {
-
-	$eventsList = get_post_meta( get_the_ID(), 'mormat_scheduler_events_tsv', true);
-
- 	wp_nonce_field('mormat_scheduler', 'mormat_scheduler_nonce');
-
-	echo '<textarea name="mormat_scheduler_events_tsv">';
-	echo esc_textarea($eventsList);
-	echo '</textarea>';
-	
-	echo '<div class="mormat_scheduler_eventsList"></div>';
-		
-}
-
-add_action('add_meta_boxes', 'mormat_scheduler_add_meta_boxes');
 
 function mormat_scheduler_wp_enqueue_scripts() {
 
-	wp_register_script( 'mormat_scheduler', plugin_dir_url( __FILE__ ) . 'index.js', [ 'jquery' ]);
-	
-	wp_enqueue_script(  'mormat_scheduler' );
-	
-	wp_register_script( 'mormat_scheduler_dist', plugin_dir_url( __FILE__ ) . 'dist/mormat_standalone_scheduler.js', [ 'jquery' ]);
-	
-	wp_enqueue_script(  'mormat_scheduler_dist' );
+    wp_enqueue_script( 
+        'mormat_scheduler', 
+        plugins_url( '/index.js', __FILE__ ), 
+        [ 'jquery' ],
+        MORMAT_SCHEDULER_VERSION
+    );
 
+    wp_enqueue_script( 
+        'mormat_scheduler_dist', 
+        plugins_url( '/dist/mormat_standalone_scheduler.js', __FILE__ ), 
+        [ ] ,
+        MORMAT_SCHEDULER_VERSION
+    );
+    
+    wp_enqueue_style( 
+        'mormat_scheduler_style', 
+        plugins_url( '/index.css', __FILE__ ), 
+        [], 
+        MORMAT_SCHEDULER_VERSION
+    );
+    
 }
 
 add_action('wp_enqueue_scripts', 'mormat_scheduler_wp_enqueue_scripts');
 
-function mormat_scheduler_admin_enqueue_scripts() {
+function mormat_scheduler_activation_hook() {
+    
+    global $wpdb;
 
-	wp_register_script( 'mormat_scheduler_admin', plugin_dir_url( __FILE__ ) . 'admin.js', [ 'jquery' ]);
-	
-	wp_enqueue_script(  'mormat_scheduler_admin' );
-
-	wp_register_script( 'mormat_scheduler_dist', plugin_dir_url( __FILE__ ) . 'dist/mormat_standalone_scheduler.js', [ 'jquery' ]);
-	
-	wp_enqueue_script(  'mormat_scheduler_dist' );
-
+    $tablename = $wpdb->prefix . MORMAT_SCHEDULER_EVENTS_TABLENAME;
+    
+    $charset_collate = $wpdb->get_charset_collate();
+    
+    $sql = "CREATE TABLE $tablename (  
+        id bigint(20) unsigned NOT NULL AUTO_INCREMENT, 
+        namespace tinytext NOT NULL,
+        label text NOT NULL, 
+        start datetime DEFAULT '0000-00-00 00:00:00' NOT NULL, 
+        end datetime DEFAULT '0000-00-00 00:00:00' NOT NULL, 
+        bgColor tinytext, 
+        data text,
+        created_by bigint(20) unsigned DEFAULT 0 NOT NULL,
+        created_at datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+        updated_at datetime DEFAULT '0000-00-00 00:00:00',
+        PRIMARY KEY  (id),
+        KEY namespace (namespace),
+        KEY start (start),
+        KEY end (end)
+    ) $charset_collate;";
+    
+    require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+    dbDelta( $sql );
+    
 }
 
-add_action('admin_enqueue_scripts', 'mormat_scheduler_admin_enqueue_scripts');
+register_activation_hook(__FILE__, 'mormat_scheduler_activation_hook');
 
-function mormat_scheduler_save_postdata( $post_id ) {
+function mormat_scheduler_get_events($namespace) {
     
-    if ( array_key_exists ( 'mormat_scheduler_events_tsv', $_POST ) ) {
-        
-        check_admin_referer('mormat_scheduler', 'mormat_scheduler_nonce');
-        
-        $cleanedValue = sanitize_textarea_field($_POST['mormat_scheduler_events_tsv']);
-        
-		update_post_meta($post_id, 'mormat_scheduler_events_tsv', $cleanedValue);
-        
+    global $wpdb;
+    
+    $tablename = $wpdb->prefix . MORMAT_SCHEDULER_EVENTS_TABLENAME;
+    
+    $sql = $wpdb->prepare( 
+        'SELECT id, label, start, end, bgColor'.
+        ' FROM ' . $tablename .
+        ' WHERE namespace = %s',
+        $namespace 
+    );
+    
+    return $wpdb->get_results($sql, ARRAY_A);
+    
+}
+
+function mormat_scheduler_ajax_save_event()
+{
+    
+    check_ajax_referer(MORMAT_SCHEDULER_NONCE_ACTION);
+
+    $id = absint($_POST['id']);
+    
+    $recordset = [
+        'label'     => sanitize_text_field($_POST['label']),
+        'start'     => sanitize_text_field($_POST['start']),
+        'end'       => sanitize_text_field($_POST['end']),
+        'bgColor'   => sanitize_text_field($_POST['bgColor']),
+        'namespace' => sanitize_text_field($_POST['namespace']),
+    ];
+    
+    foreach (['label', 'start', 'end'] as $key) {
+        if (!$recordset[$key]) {
+            wp_send_json_error(sprintf("`%s` required", $key));
+        }
     }
     
+    $results = [];
+    
+    global $wpdb;
+
+    $tablename = $wpdb->prefix . MORMAT_SCHEDULER_EVENTS_TABLENAME;
+    if ($id) {
+        $recordset['updated_at'] = date('Y-m-d h:i:s');
+        $wpdb->update($tablename, $recordset, ['id' => $id]);
+    } else {
+        $recordset['created_by'] = get_current_user_id();
+        $recordset['created_at'] = date('Y-m-d h:i:s');
+        $wpdb->insert($tablename, $recordset);
+        $results['id'] = $wpdb->insert_id;
+    }
+    
+    wp_send_json_success($results);
+    
 }
 
-add_action( 'save_post', 'mormat_scheduler_save_postdata');
+add_action("wp_ajax_mormat_scheduler_save_event", "mormat_scheduler_ajax_save_event");
 
-function mormat_scheduler_content_filter( $content ) {
+function mormat_scheduler_ajax_delete_event() {
+    
+    check_ajax_referer(MORMAT_SCHEDULER_NONCE_ACTION);
+    
+    $id = absint($_POST['id']);
 
-	$post = get_post();
-
-	if ( get_post()->post_type === 'mormat_scheduler' ) {
-		
-		$value = get_post_meta($post->ID, 'mormat_scheduler_events_tsv', true);
-		
-		$content .= '<p class="mormat-scheduler-Scheduler">' . esc_html($value) . '</p>';
-		
-	}
-	
-	return $content;
-
+    if (!$id) {
+        wp_send_json_error("`id` required");
+    }
+    
+    global $wpdb;
+    
+    $tablename = $wpdb->prefix . MORMAT_SCHEDULER_EVENTS_TABLENAME;
+    
+    $wpdb->delete($tablename, ['id' => $id]);
+    
+    wp_send_json_success([]);   
+    
 }
 
-add_filter( 'the_content', 'mormat_scheduler_content_filter');
-
-
+add_action("wp_ajax_mormat_scheduler_delete_event", "mormat_scheduler_ajax_delete_event");

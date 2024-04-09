@@ -15,8 +15,6 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-define('MORMAT_SCHEDULER_VERSION', '0.1.0');
-
 define('MORMAT_SCHEDULER_EVENTS_TABLENAME', 'mormat_scheduler_events');
 
 define('MORMAT_SCHEDULER_NONCE_ACTION', 'mormat_scheduler_events');
@@ -66,25 +64,27 @@ function mormat_scheduler_shortcode($atts = [], $content = null) {
 
 function mormat_scheduler_wp_enqueue_scripts() {
 
+    $plugin_data = get_file_data(__FILE__, ['version' => 'Version'], 'plugin');
+            
     wp_enqueue_script( 
         'mormat_scheduler', 
         plugins_url( '/index.js', __FILE__ ), 
         [ 'jquery' ],
-        MORMAT_SCHEDULER_VERSION
+        $plugin_data['version']
     );
 
     wp_enqueue_script( 
         'mormat_scheduler_dist', 
         plugins_url( '/dist/mormat_standalone_scheduler.js', __FILE__ ), 
         [ ] ,
-        MORMAT_SCHEDULER_VERSION
+        $plugin_data['version']
     );
     
     wp_enqueue_style( 
         'mormat_scheduler_style', 
         plugins_url( '/index.css', __FILE__ ), 
         [], 
-        MORMAT_SCHEDULER_VERSION
+        $plugin_data['version']
     );
     
 }

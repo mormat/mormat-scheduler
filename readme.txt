@@ -6,7 +6,7 @@ Requires at least: 6.4
 Tested up to:      6.4
 Requires PHP:      7.2
 License: GPLv2 or later
-Stable tag: 0.1.0
+Stable tag: 0.1.1
 
 Add a Google-like scheduler to your WordPress site
 
@@ -27,6 +27,9 @@ Drag and drop is also available.
 - **events_namespace**: Useful only if you need to display and manage a specific set of events. The default value is "".
 
 == Changelog ==
+
+= 0.1.1 =
+Day names are shortened in month view
 
 = 0.1.0 =
 Scheduler is rendered with shortcode

@@ -3,7 +3,7 @@ Contributors: mormat
 Donate link: https://www.buymeacoffee.com/mormat
 Tags: shortcode, scheduler, agenda, planner, calendar
 Requires at least: 6.4
-Tested up to:      6.4
+Tested up to:      6.5
 Requires PHP:      7.2
 License: GPLv2 or later
 Stable tag: 0.1.1
@@ -25,6 +25,17 @@ Drag and drop is also available.
 - **initial_date** : A date from which the scheduler will start displaying the events. If not provided, the current date system will be used. A string formatted as "yyyy-mm-dd" can be provided or any value compatible with the `Date` javascript object. 
 - **default_view**: The default view used for displaying events. Allowed values are "day", "week" or "month". Default value is "week"
 - **events_namespace**: Useful only if you need to display and manage a specific set of events. The default value is "".
+
+== Frequently Asked Questions ==
+ 
+= Can I ask you to change something for me? =
+ 
+Yes absolutely.
+ 
+== Upgrade Notice ==
+
+na
+
 
 == Changelog ==
 

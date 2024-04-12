@@ -1,0 +1,56 @@
+# Copyright (C) 2024 Mathieu MOREL
+# This file is distributed under the GPLv2.
+msgid ""
+msgstr ""
+"Project-Id-Version: Mormat Scheduler 0.1.1\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/mormat-scheduler\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2024-04-12T17:11:14+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.10.0\n"
+"X-Domain: mormat-scheduler\n"
+
+#. Plugin Name of the plugin
+#: mormat-scheduler.php
+msgid "Mormat Scheduler"
+msgstr ""
+
+#. Plugin URI of the plugin
+#: mormat-scheduler.php
+msgid "https://github.com/mormat/mormat-scheduler"
+msgstr ""
+
+#. Description of the plugin
+#: mormat-scheduler.php
+msgid "Add a Google-like scheduler to your WordPress site"
+msgstr "Ajoute un agenda de type Google à votre site Wordpress"
+
+#. Author of the plugin
+#: mormat-scheduler.php
+msgid "Mathieu MOREL"
+msgstr ""
+
+#. Author URI of the plugin
+#: mormat-scheduler.php
+msgid "http://github.com/mormat"
+msgstr ""
+
+#: mormat-scheduler.php:57
+msgid "Today"
+msgstr "Aujourd'hui"
+
+#: mormat-scheduler.php:58
+msgid "Day"
+msgstr "Jour"
+
+#: mormat-scheduler.php:59
+msgid "Month"
+msgstr "Mois"
+
+#: mormat-scheduler.php:60
+msgid "Week"
+msgstr "Semaine"

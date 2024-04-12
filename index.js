@@ -20,6 +20,8 @@
                 editable:    params['editable'],
                 draggable:   params['draggable'],
                 events:      params['events'],
+                locale:      params['locale'].replace('_', '-'),
+                labels:      params['labels'],
                 height:     'auto',
                 width:      'auto',
                 onEventCreate: function(event) {       

@@ -25,6 +25,7 @@ Drag and drop is also available.
 - **initial_date** : A date from which the scheduler will start displaying the events. If not provided, the current date system will be used. A string formatted as "yyyy-mm-dd" can be provided or any value compatible with the `Date` javascript object. 
 - **default_view**: The default view used for displaying events. Allowed values are "day", "week" or "month". Default value is "week"
 - **events_namespace**: Useful only if you need to display and manage a specific set of events. The default value is "".
+- **locale** : i18n locale used for displaying dates (For instances `en`, `en_US` or `en_GB`). Default value is the website's current locale.
 
 == Frequently Asked Questions ==
  
@@ -38,6 +39,9 @@ na
 
 
 == Changelog ==
+
+= 0.1.2 =
+i18n
 
 = 0.1.1 =
 Day names are shortened in month view

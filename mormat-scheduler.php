@@ -2,7 +2,7 @@
 
 /*
  * Plugin Name: Mormat Scheduler
- * Plugin URI: https://github.com/mormat/scheduler-widget
+ * Plugin URI: https://github.com/mormat/mormat-scheduler
  * Description: Add a Google-like scheduler to your WordPress site
  * Version: 0.1.1
  * Requires at least: 6.4
@@ -11,6 +11,7 @@
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Author: Mathieu MOREL
  * Author URI: http://github.com/mormat
+ * Text Domain: mormat-scheduler
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
@@ -20,6 +21,12 @@ define('MORMAT_SCHEDULER_EVENTS_TABLENAME', 'mormat_scheduler_events');
 define('MORMAT_SCHEDULER_NONCE_ACTION', 'mormat_scheduler_events');
 
 function mormat_scheduler_init() {
+    
+    load_plugin_textdomain(
+        'mormat-scheduler',
+        false,
+        basename( dirname( __FILE__ ) ) . '/languages'
+    );
     
     add_shortcode('mormat_scheduler', 'mormat_scheduler_shortcode');
     
@@ -34,6 +41,7 @@ function mormat_scheduler_shortcode($atts = [], $content = null) {
         'default_view' => 'week',
         'height'       => '640px',
         'events_namespace' => '',
+        'locale'       => get_locale()
     ];
     
     $params  = (is_array($atts) ? $atts : []) + $defaults;
@@ -50,6 +58,14 @@ function mormat_scheduler_shortcode($atts = [], $content = null) {
         $securedUrl = wp_nonce_url($rawUrl, MORMAT_SCHEDULER_NONCE_ACTION);
         $params['urls'][$ajaxAction] = $securedUrl;
     }    
+    
+    
+    $params['labels'] = [
+        'header.today' => __( 'Today', 'mormat-scheduler'),
+        'header.day'   => __( 'Day',   'mormat-scheduler'),
+        'header.month' => __( 'Month', 'mormat-scheduler'),
+        'header.week'  => __( 'Week',  'mormat-scheduler')
+    ];
     
     $jsonParams = json_encode($params);
     
